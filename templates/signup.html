@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Sign Up</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    </head>
+    <body>
+        <div class="pure-menu pure-menu-horizontal" class="'flex-container">
+            <ul class="pure-menu-list"></ul>
+                <li class="pure-menu-item">
+                    <img src="static/img/hot_takes_logo.png" id="logo">
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link pure-menu-selected">Sign Up</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link">Log In</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="/" class="pure-menu-link">All Takes</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link">Make a Take</a>
+                </li>
+        </div>
+        <!-- <div class="'signUpDiv">
+            <h1>Sign Up</h1>
+            <label>Username:</label>
+            <input type="text">
+            <br>
+            <label>Password:</label>
+            <input type="password">
+            <br>
+            <label> Reenter Password:</label>
+            <input type="password">
+            <br>
+            <span>Non-Hot Take: Passwords should contain at least one uppercase letter, one lowercase letter, one digit, and one special character.</span>
+            <button type="submit"></button>
+        </div> -->
+        <div id="signUpFormContainer">
+            <form class="pure-form pure-form-stacked" id="signupform">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <h1>Sign Up</h1>
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="aligned-name">Username</label>
+                        <input id="aligned-name" type="text" placeholder="Username" required/>
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="aligned-password">Password</label>
+                        <input id="aligned-password" type="password" placeholder="Password" required/>
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="aligned-password">Reenter Password</label>
+                        <input id="aligned-password" type="password" placeholder="Reenter Password" required/>
+                    </div>
+                    <div class="pure-control-group">
+                        <span>Non-Hot Take: Passwords should contain at least one uppercase letter, one lowercase letter, one digit, and one special character.</span>
+                    </div>
+                    <div class="pure-control-group">
+                        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+    </body>
+</html>
