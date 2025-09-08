@@ -27,10 +27,19 @@
         <div id="cardDiv">
             {% for take in takes %}
                 <div class="card">
-                    <h2>{{ take.title }}</h2>
-                    <span>by: {{ take.author }}</span>
-                    <input type="range">
-                    <button type="submit">Rate the Take</button>
+                    <h2 class="takeTitle">{{ take.title }}</h2>
+                    <span class="takeAuthor">by: {{ take.author }}</span>
+                    <input type="range" class="takeRating">
+                    <span class="takeDescription"></span>
+                    <div class="rateButtonDiv">
+                        <button type="submit" class="rateButton">Rate the Take</button>
+                    </div>
+                    <div class="otherButtons">
+                        <button class="starButton">⭐️Star the Take</button>
+                        <button class="reportButton">🚩Report the Take</button>
+                    </div>
+                
+                    </div>
                 </div>
             {% endfor %}
         </div>

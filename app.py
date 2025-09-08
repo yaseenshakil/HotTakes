@@ -12,10 +12,13 @@ takes = [
         "author": "the anti golf association"
     }, 
     {
-        "title": "Friends is highly overrated", 
+        "title": "Friends is highly overrated",
         "author": "everyone"
+    },
+    {
+        "title": "Crunchy peanut butter over creamy peanut butter",
+        "author": "reception lady"
     }
-
 ]
 
 @app.route('/')
