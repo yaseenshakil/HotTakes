@@ -1,0 +1,5 @@
+# Remove MacOS finder config
+.DS_Store
+
+# Remove potential python virtual environment files
+.venv
