@@ -18,6 +18,10 @@ takes = [
     {
         "title": "Crunchy peanut butter over creamy peanut butter",
         "author": "reception lady"
+    }, 
+    {
+        "title": "Ball-point pens are much better than fountain pens", 
+        "author": "all pen users"
     }
 ]
 

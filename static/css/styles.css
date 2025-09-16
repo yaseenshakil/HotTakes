@@ -81,6 +81,7 @@ input[type="range"] {
   margin-right: 2%;
   margin-top: 10px;
   justify-content: center;
+  margin-bottom: 10px;
 
 }
 
@@ -94,7 +95,7 @@ input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;  
   width: 30px;
   height: 30px;
-  background-image: url("../img/fire.png"); 
+  background-image: var(--thumb-image, url("../img/fire.png")); 
   background-size: contain;
   cursor: pointer;
   border: none;
