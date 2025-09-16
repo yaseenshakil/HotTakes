@@ -60,20 +60,7 @@
             </form>
         </div>
 
-        <div class="pure-u-1 pure-u-md-1-3" style="padding-left: 2rem;">
-            <div id="g_id_onload" 
-                data-client_id="{{ GOOGLE_CLIENT_ID }}" 
-                data-auto_prompt="false"
-                data-callback="handleCredentialResponse">
-            </div>
-            <div class="g_id_signin" 
-                data-type="standard" 
-                data-shape="circle" 
-                data-theme="outline" 
-                data-text="continue_with"
-                data-size="large">
-            </div>
-        </div>
+        <p><a href="/login">Login</a></p>
 
         <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
     </body>

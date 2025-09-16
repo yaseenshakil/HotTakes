@@ -1,18 +1,28 @@
-from flask import Flask, render_template, jsonify, request, session;
-from dotenv import load_dotenv
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_oauth_requests
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for;
+from dotenv import find_dotenv, load_dotenv
+from urllib.parse import quote_plus, urlencode
+from authlib.integrations.flask_client import OAuth
+import json
+from os import environ as env
 import os
+
 
 app = Flask(__name__)
 
-load_dotenv()
-google_client_id = os.environ.get('GOOGLE_CLIENT_ID')
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hottakes_users.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
+app.secret_key = env.get("APP_SECRET_KEY")
+oauth = OAuth(app)
+oauth.register(
+    "auth0",
+    client_id=env.get("AUTH0_CLIENT_ID"),
+    client_secret=env.get("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+)
 
 takes = [
     {
@@ -35,60 +45,46 @@ takes = [
 
 @app.route('/')
 def home_page():
-    return render_template("index.html", takes=takes)
+    return render_template("index.html", takes=takes, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
 @app.route('/signup')
 def signup():
-    return render_template("signup.html", GOOGLE_CLIENT_ID=google_client_id) # its fine to send the id to the front end. its just a public identifier for your app to use google auth
+    return render_template("signup.html") # its fine to send the id to the front end. its just a public identifier for your app to use google auth
 
-@app.route('/auth/google', methods=['POST'])
-def google_auth():
-    # print("Google auth endpoint hit: /auth/google")
+# docs at https://manage.auth0.com/dashboard/us/dev-85r5qhl2gueunsj4/applications/ktRpbCI56rJ6ohiAHHwvf33riy9u0w65/quickstart/webapp/python
+@app.route("/login")
+def login():
+    return oauth.auth0.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True)
+    )
 
-    data = request.get_json()
-    # print(f"data: {data}")
-    
-    if not data or data["token"] == None:
-        return jsonify({"success": False, "message": "No token provided"}), 400
-    
-    token = data['token']
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    token = oauth.auth0.authorize_access_token()
+    session["user"] = token
+    return redirect("/")
 
-    try:
-        # gotten from https://google-auth.readthedocs.io/en/latest/reference/google.oauth2.id_token.html#module-google.oauth2.id_token
-        print("Verifying token...")
-        idinfo = id_token.verify_oauth2_token(
-            token, 
-            google_oauth_requests.Request(), 
-            google_client_id
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(
+        "https://" + env.get("AUTH0_DOMAIN")
+        + "/v2/logout?"
+        + urlencode(
+            {
+                "returnTo": url_for("home", _external=True),
+                "client_id": env.get("AUTH0_CLIENT_ID"),
+            },
+            quote_via=quote_plus,
         )
-        print(f"idinfo: {idinfo}")
+    )
 
-        user_google_id = idinfo.get('sub', '')
-        email = idinfo.get('email', '')
-        name = idinfo.get('name', '')
-        
-        # TODO: Check if user exists in database and decide signup or login
-        # returning account info from DB upon successful auth
-        return jsonify({
-            "success": True, 
-            "message": "Authentication successful",
-            "user": {
-                "id": user_google_id,
-                "email": email,
-                "name": name
-            }
-        })
-        
-    except ValueError as e:
-        print(f"Error verifying token: {e}")
-        return jsonify({"success": False, "message": f"auth failed"}), 401
-
-@app.after_request
-def add_security_headers(response):
-    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
-    return response
+# @app.after_request
+# def add_security_headers(response):
+#     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
+#     return response
 
 app.static_folder = "static"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=env.get("PORT", 3000), debug=True)
