@@ -4,6 +4,8 @@
         <title>Hot Takes</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link rel="preconnect" href="https://rsms.me/" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" crossorigin="anonymous">
         <script src="{{url_for('static', filename='js/animations.js') }}"></script>
     </head>
     <body>
@@ -22,7 +24,7 @@
                     <a href="/" class="pure-menu-link">All Takes</a>
                 </li>
                 <li class="pure-menu-item">
-                    <a href="#" class="pure-menu-link">Make a Take</a>
+                    <a href="/makeatake" class="pure-menu-link">Make a Take</a>
                 </li>
         </div>
         <div id="cardDiv">
@@ -31,6 +33,7 @@
                     <h2 class="takeTitle">{{ take.title }}</h2>
                     <span class="takeAuthor">by: {{ take.author }}</span>
                     <input type="range" class="takeRating" onchange="animateSliderThumb(this)">
+                    <span class="rateComment">IDK how I feel about this take yet</span>
                     <span class="takeDescription"></span>
                     <div class="rateButtonDiv">
                         <button type="submit" class="rateButton">Rate the Take</button>

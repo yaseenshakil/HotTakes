@@ -1,3 +1,8 @@
+:root{
+    font-family: Inter, sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
 img {
     position: relative;
     left: 10px;
@@ -9,16 +14,17 @@ li{
     font-style: italic;
 }
 
-/* form{
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    height: 100vh;
-} */
-
 body{
     font-style: normal;
-    font-family: 'Courier New', Courier, monospace;
+    /* font-family: 'Courier New', Courier, monospace; */
+    font-family: Inter, sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
+.rateComment{
+    font-style: italic;
+    margin-left: 2%;
+
 }
 
 #signUpFormContainer{
@@ -139,3 +145,38 @@ input[type='range']::-webkit-slider-thumb {
     /* margin-right: 2%; */
 }
 
+#makeTakeDiv{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin-left: 2%;   
+    z-index: 0; 
+}
+
+#stacked-title{
+    width: 100%;
+}
+
+#stacked-description{
+    width: 100%;
+}
+
+#makeItButton{
+    margin-top: 5px;
+}
+
+#takeWaitDiv{
+    z-index: 999;
+    width: 50%;
+    height: 70%;
+    border-radius: 20px;
+    box-shadow: 3px 3px lightblue;
+    background-color: white;
+    display: none;
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+    left: 25%;
+    top: 25%;
+    position: absolute;
+}

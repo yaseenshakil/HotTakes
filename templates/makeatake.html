@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hot Takes</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link rel="preconnect" href="https://rsms.me/">
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+        <script src="{{url_for('static', filename='js/animations.js') }}"></script>
+        <script src="{{url_for('static', filename='js/processor.js') }}"></script>
+
+
+    </head>
+    <body>
+        <div class="pure-menu pure-menu-horizontal" class="flex-container">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item">
+                    <img src="static/img/hot_takes_logo.png" id="logo">
+                </li>
+                <li class="pure-menu-item">
+                    <a href="/signup" class="pure-menu-link">Sign Up</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link">Log In</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="/" class="pure-menu-link">All Takes</a>
+                </li>
+                <li class="pure-menu-item pure-menu-selected">
+                    <a href="#" class="pure-menu-link">Make a Take</a>
+                </li>
+            </ul>    
+        </div>
+        <div id="takeWaitDiv"></div>
+        <div id="makeTakeDiv"> 
+            <form class="pure-form pure-form-stacked" onsubmit="processTake">
+                <fieldset>
+                <h1>Make a Take</h1>
+                <label for="stacked-title">Take Title</label>
+                <input id="stacked-title" type="text" placeholder="Take Title" required />
+                <label for="stacked-description">Description </label>
+                <textarea class="pure-input-1" placeholder="Description (up to 100 words)"></textarea>
+                <label for="stacked-tag">Take Tag</label>
+                <select id="stacked-tag" required>
+                    <optgroup label="🎬 Entertainment">
+                        <option value="movies">Movies</option>
+                        <option value="tv-shows">TV Shows</option>
+                        <option value="pop-culture">Pop Culture</option>
+                        <option value="celebrities">Celebrities</option>
+                        <option value="books">Books</option>
+                        <option value="anime">Anime</option>
+                        <option value="cartoons">Cartoons</option>
+                        <option value="award-shows">Award Shows</option>
+                        <option value="memes">Memes</option>
+                        <option value="video-games">Video Games</option>
+                      </optgroup>
+                  
+                      <optgroup label="🏆 Sports">
+                        <option value="sports">Sports</option>
+                        <option value="nfl">NFL</option>
+                        <option value="nba">NBA</option>
+                        <option value="nhl">NHL</option>
+                        <option value="olympics">Olympics</option>
+                      </optgroup>
+                  
+                      <optgroup label="🍔 Food & Lifestyle">
+                        <option value="food">Food</option>
+                        <option value="fast-food">Fast Food</option>
+                        <option value="restaurants">Restaurants</option>
+                        <option value="cooking">Cooking</option>
+                        <option value="relationships">Relationships</option>
+                        <option value="dating">Dating</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="travel">Travel</option>
+                        <option value="health">Health</option>
+                        <option value="animals">Animals</option>
+                        <option value="pets">Pets</option>
+                      </optgroup>
+                  
+                      <optgroup label="💻 Tech & Business">
+                        <option value="social-media">Social Media</option>
+                        <option value="ai">AI</option>
+                        <option value="hardware">Hardware</option>
+                        <option value="finance">Finance</option>
+                        <option value="technology">Technology</option>
+                      </optgroup>
+                  
+                      <optgroup label="🌍 Society & Current Events">
+                        <option value="climate-change">Climate Change</option>
+                        <option value="current-events">Current Events</option>
+                        <option value="news">News</option>
+                        <option value="geography">Geography</option>
+                        <option value="history">History</option>
+                      </optgroup>
+                  
+                      <optgroup label="📚 Academics">
+                        <option value="science">Science</option>
+                        <option value="math">Math</option>
+                      </optgroup>
+                </select>            
+                <button class="pure-button pure-button-primary" id="makeItButton" type="submit">Make it</button>
+                </fieldset>
+            </form>
+        </div>
+    </body>
+</html>
