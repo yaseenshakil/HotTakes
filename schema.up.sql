@@ -1,10 +1,9 @@
+CREATE SCHEMA hot_takes AUTHORIZATION csci5117
 
-/*
- * Create users table
- */
-CREATE TABLE IF NOT EXISTS users
+-- Create users super-class
+CREATE TABLE IF NOT EXISTS hot_takes.users
 (
-    user_id uuid, -- generated session ID or auth0
+    user_id uuid NOT NULL, -- generated session ID or auth0
 
     age text,
     location text,
@@ -14,39 +13,45 @@ CREATE TABLE IF NOT EXISTS users
     updated_on timestamptz(0) DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (user_id)
-);
-
-CREATE TABLE IF NOT EXISTS user_accounts
+)
+-- Create account user table
+CREATE TABLE IF NOT EXISTS hot_takes.user_accounts
 (
-    user_id uuid, -- ID given by auth0
-    auth0_token text,
+    user_id uuid NOT NULL, -- ID given by auth0
 
-    username text,
+    username text NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
-CREATE TABLE IF NOT EXISTS session_users
+)
+-- Create session user table
+CREATE TABLE IF NOT EXISTS hot_takes.session_users
 (
-    user_id uuid,
+    user_id uuid NOT NULL,
 
-    token text,
+    token text NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
-/*
- * Create takes table
- */
-CREATE TABLE IF NOT EXISTS takes
+)
+-- Create tags table
+CREATE TABLE IF NOT EXISTS hot_takes.tags
 (
-    take_id uuid DEFAULT gen_random_uuid(),
+    tag_id serial,
 
-    title text,
+    label text,
+    category text,
+
+    PRIMARY KEY (tag_id)
+)
+-- Create takes table
+CREATE TABLE IF NOT EXISTS hot_takes.takes
+(
+    take_id uuid NOT NULL DEFAULT gen_random_uuid(),
+
+    title text NOT NULL,
     newtitle text,
 
     description text,
-    tag text,
+    tag_id integer NOT NULL,
 
     author_id uuid,
 
@@ -54,16 +59,14 @@ CREATE TABLE IF NOT EXISTS takes
     updated_on timestamptz(0) DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (take_id),
+    FOREIGN KEY (tag_id) REFERENCES tags(tag_id),
     FOREIGN KEY (author_id) REFERENCES users(user_id)
-);
-
-/*
- * Create user_take_ratings table
- */
-CREATE TABLE IF NOT EXISTS user_take_ratings
+)
+-- Create take-rating table
+CREATE TABLE IF NOT EXISTS hot_takes.take_ratings
 (
-    user_id uuid,
-    take_id uuid,
+    take_id uuid NOT NULL,
+    user_id uuid NOT NULL,
 
     rating numeric(3, 1), -- limits to 1 decimal place
 
@@ -73,12 +76,9 @@ CREATE TABLE IF NOT EXISTS user_take_ratings
     PRIMARY KEY (user_id, take_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (take_id) REFERENCES takes(take_id)
-);
-
-/*
- * Create comments table
- */
-CREATE TABLE IF NOT EXISTS comments
+)
+-- Create take-comments table
+CREATE TABLE IF NOT EXISTS hot_takes.take_comments
 (
     take_id uuid,
     commenter_id uuid,
