@@ -2,16 +2,23 @@ import os
 
 from flask import Flask, render_template, request, send_from_directory;
 
+from psycopg2.errors import ForeignKeyViolation
+
 from db import setup as db_setup
 import db.temp as db_query
+from utils import check_db_for_take, check_db_for_user, check_db_for_user_match, convert_dict_keys_to_camelCase
 
+# Flask app setup
 app = Flask(__name__)
 app.static_folder = "static"
 
-# with app.app_context():
-#     db_setup()
+# Setup database
+with app.app_context():
+    db_setup()
 
-USER_ID = "00000000-0000-0000-0000-000000000000"
+USER_ID = "00000000-0000-0000-0000-000000000001"
+
+TAKE_COLS = ["title", "tagId", "description"]
 
 takes = [
     {
@@ -32,10 +39,11 @@ takes = [
     }
 ]
 
-@app.route("/healthcheck")
+@app.route("/health")
 def healthcheck():
     return {
-
+        "version": "0.0.1",
+        "message": "Hot Takes Web Server",
     }
 
 @app.route("/favicon.ico")
@@ -60,6 +68,18 @@ API Routes
 - User registration
 - Take query and CRUD routes
 - Take comment query and CUD routes
+
+Take Response Format:
+{
+    takeId: string,
+    title: string,
+    newTitle: string | undefined,
+    tag: string,
+    description: string,
+    author: string,
+    createdOn: date,
+    updatedOn: date,
+}
 """
 
 # User Routes
@@ -84,102 +104,223 @@ def user_add_session():
 def take_query():
     """
     Handle request to query takes
-    """
-    # NOTE: pages are 1-indexed [1, 2, ...]
 
+    Query Parameters:
+        query (string): search query
+        page (int): page number (1-indexed)
+        limit (int): number of takes to query
+
+    Returns:
+        dict: number of takes queried and list of takes with HTTP status code 200
+    """
+
+    # Get request parameters
     query = request.args.get("query", "")
     page = request.args.get("page", 1, type=int)
     limit = request.args.get("limit", 25, type=int)
 
+    # Set query offset
     offset = (page - 1) * limit
 
+    # Run database query
     takes = db_query.take_query(limit=limit, offset=offset, search_query=query)
 
     return {
         "count": len(takes),
-        "data": takes,
+        "data": list(map(convert_dict_keys_to_camelCase, takes)),
     }
 
-@app.route("/api/takes/create", methods=["POST"])
+@app.route("/api/takes", methods=["POST"])
 def take_create():
     """
     Handle request to create a new take
 
-    Body Format::
+    This API endpoint is protected and requires authorization
 
-        {
+    Body:
+        json: {
             title: string,
-            tags: string,
+            tagId: number,
             description: string | null,
         }
+
+    Returns:
+        tuple: created take with status 201, or error message with error HTTP status code
+
+        Status Codes:
+        201: creation success
+        400: request errors (invalid user ID, invalid tag ID, etc.)
+        401: user is not authenticated (logged-out)
     """
 
+    # Get Authorization header and user ID
+    userId = request.headers.get("Authorization")
+    if userId is None:
+        return "Not authenticated", 401
+    userId = userId.removeprefix("Bearer ")
+
+    # Check if user exists; return unauthorized to hide whether user exists
+    if not check_db_for_user(userId):
+        return "User not authenticated", 401
+
+    # Get request body and verify required values
     body = dict(request.get_json())
-    print(body)
+    bodyKeys = body.keys()
+    if "title" not in bodyKeys or "tagId" not in bodyKeys:
+        return "Missing values in request body", 400
 
-    take = db_query.take_insert(USER_ID, title=body.get("title"), tag=body.get("tags"), description=body.get("description"))
+    # Run database query
+    try:
+        take = db_query.take_insert(userId, title=body.get("title"), tag_id=body.get("tagId"), description=body.get("description"))
+    except ForeignKeyViolation:
+        return "Invalid tag ID", 400
 
-    return take
+    return convert_dict_keys_to_camelCase(take), 201
 
-@app.route("/api/takes/<uuid:takeId>")
+@app.route("/api/takes/<takeId>")
 def take_retrieve(takeId):
     """
     Handle request to retrieve a take
+
+    Args:
+        takeId: take UUID
+
+    Returns:
+        take: retrieved take with response code 200
+
+        If take is not found, return status code 404
     """
 
-    # TODO
+    # Check if take exists
+    if not check_db_for_take(takeId):
+        return "Take not found", 404
 
-    take = db_query.take_select(USER_ID, takeId)
+    # Run database query
+    take = db_query.take_select(takeId)
 
-    return take
+    return convert_dict_keys_to_camelCase(take), 200
 
-@app.route("/api/takes/<uuid:takeId>", methods=["PATCH"])
+@app.route("/api/takes/<takeId>", methods=["PATCH"])
 def take_update(takeId):
     """
-    Handle request to update take
+    Handle request to update a take
+
+    This API endpoint is protected and requires authorization
+
+    Args:
+        takeId: take UUID
+
+    Body:
+        json: {
+            title: string | null,
+            tagId: string | null,
+            description | null,
+        }
+
+    Returns:
+        tuple: response message and HTTP status code
+
+        Status Codes:
+        200: update success
+        400: request errors (user not found, no changes requested, etc)
+        401: User is not authenticated (logged-out)
+        404: take not found
     """
 
-    # TODO
+    # Get Authorization header and user ID
+    userId = request.headers.get("Authorization")
+    if userId is None:
+        return "Not authenticated", 401
+    userId = userId.removeprefix("Bearer ")
 
+    # Check if user exists; return unauthorized to hide whether user exists
+    if not check_db_for_user(userId):
+        return "User not authenticated", 401
+
+    # Check if take exists
+    if not check_db_for_take(takeId):
+        return "Take not found", 404
+
+    # Check if user has perms to update take
+    if not check_db_for_user_match(userId, takeId):
+        return "Not authorized", 403
+
+    # Get request body and verify updates are requested
     body = dict(request.get_json())
-    print(body)
+    if not any(key in body.keys() for key in TAKE_COLS):
+        return "No values in request body", 400
 
-    take = db_query.take_update(USER_ID, takeId, title=body.get("title"), tag=body.get("tag"), description=body.get("description"))
+    # Run database query
+    try:
+        take = db_query.take_update(USER_ID, takeId, title=body.get("title"), tag_id=body.get("tagId"), description=body.get("description"))
+    except ForeignKeyViolation:
+        return "Invalid tag ID", 400
 
-    return take
+    return convert_dict_keys_to_camelCase(take), 200
 
-@app.route("/api/takes/<uuid:takeId>", methods=["DELETE"])
+@app.route("/api/takes/<takeId>", methods=["DELETE"])
 def take_delete(takeId):
     """
     Handle request to delete take
+
+    This API endpoint is protected and requires authorization
+
+    Args:
+        takeId (str): take UUID
+
+    Returns:
+        tuple: response message and HTTP status code
+
+        Status Codes:
+        204: if take was deleted
+        404: if take was not found
+        500: if take was not deleted due to server errors
     """
 
-    # TODO
+    # Get Authorization header and user ID
+    userId = request.headers.get("Authorization")
+    if userId is None:
+        return "Not authenticated", 401
+    userId = userId.removeprefix("Bearer ")
 
-    succ = db_query.take_delete(USER_ID, takeId)
-    if succ:
-        return "", 204
-    else:
-        return "", 400
+    # Check if user exists; return unauthorized to hide wheterh user exists
+    if not check_db_for_user(userId):
+        return "User not authenticated", 401
+
+    # Check if take exists
+    if not check_db_for_take(takeId):
+        return "Take not found", 404
+
+    # Check if user has perms to delete take
+    if not check_db_for_user_match(userId, takeId):
+        return "Not authorized", 403
+
+    # Run database query
+    res = db_query.take_delete(userId, takeId)
+
+    if not res:
+        return "Take not deleted", 500
+
+    return "", 204
 
 # Take Comment Routes
-@app.route("/api/takes/<uuid:takeId>/comments")
+@app.route("/api/takes/<takeId>/comments")
 def take_comment_query(takeId):
     # TODO
     # NOTE: default to newest to oldest, but allow filtering?
     pass
 
-@app.route("/api/takes/<uuid:takeId>/comments/add")
+@app.route("/api/takes/<takeId>/comments/add")
 def take_comment_create(takeId):
     # TODO
     pass
 
-@app.route("/api/takes/<uuid:takeId>/comments/<uuid:commentId>")
+@app.route("/api/takes/<takeId>/comments/<commentId>")
 def take_comment_update(takeId, commentId):
     # TODO
     pass
 
-@app.route("/api/takes/<uuid:takeId>/comments/<uuid:commentId>")
+@app.route("/api/takes/<takeId>/comments/<commentId>")
 def take_comment_delete(takeId, commentId):
     # TODO
     pass
