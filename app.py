@@ -5,13 +5,15 @@ from authlib.integrations.flask_client import OAuth
 import json
 from os import environ as env
 import os
-
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
+
+# to connect to auth0
 app.secret_key = env.get("APP_SECRET_KEY")
 oauth = OAuth(app)
 oauth.register(
@@ -23,6 +25,12 @@ oauth.register(
     },
     server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
+
+# to connect to DB
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("HOTTAKES_RENDER_DB_URL", "postgresql+psycopg://user:pw@localhost:5432/hottakes")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
 
 takes = [
     {
@@ -49,23 +57,28 @@ def home_page():
 
 @app.route('/signup')
 def signup():
-    return render_template("signup.html") # its fine to send the id to the front end. its just a public identifier for your app to use google auth
+    print("signing up")
+    return render_template("signup.html")
 
-# docs at https://manage.auth0.com/dashboard/us/dev-85r5qhl2gueunsj4/applications/ktRpbCI56rJ6ohiAHHwvf33riy9u0w65/quickstart/webapp/python
+# docs at https://auth0.com/docs/quickstart/webapp/python/interactive
 @app.route("/login")
 def login():
+    print("logging in")
     return oauth.auth0.authorize_redirect(
         redirect_uri=url_for("callback", _external=True)
     )
 
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
+    print("in callback")
+    print(request.args)
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
     return redirect("/")
 
 @app.route("/logout")
 def logout():
+    print("logging out")
     session.clear()
     return redirect(
         "https://" + env.get("AUTH0_DOMAIN")
@@ -78,11 +91,6 @@ def logout():
             quote_via=quote_plus,
         )
     )
-
-# @app.after_request
-# def add_security_headers(response):
-#     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
-#     return response
 
 app.static_folder = "static"
 
