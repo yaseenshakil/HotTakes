@@ -91,6 +91,10 @@ def home_page(): # TODO: check if user is in session, if not redirect to signup/
 def signup():
     return render_template("signup.html")
 
+@app.route("/login")
+def login():
+    print(f"serving log in page")
+    return render_template("login.html")
 
 """
 API Routes
@@ -130,9 +134,9 @@ def user_add_session():
     pass
 
 # docs at https://auth0.com/docs/quickstart/webapp/python/interactive
-@app.route("/login-callback")
-def login():
-    print("login-callback")
+@app.route("/login/callback")
+def login_callback():
+    print("login/callback")
     return oauth.auth0.authorize_redirect(
         redirect_uri=url_for("callback", _external=True)
     )
@@ -155,6 +159,9 @@ def callback():
             "user_id" : token["userinfo"]["sub"] # this is the only unique identifier for each google account
         } # TODO: check if this exist inside the DB
 
+        # if check_db_for_user(basic_user_info["user_id"]) == False:
+        #     return redirect("/signup") 
+        
         return redirect("/")
     except Exception as e:
         print(f"OAuth callback error: {e}")
