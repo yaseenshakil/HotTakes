@@ -1,5 +1,3 @@
-# Prevent git versioning of .env
-**/.env
 
-# Remove Python caching
-__pycache__
+__pycache__/
+.env

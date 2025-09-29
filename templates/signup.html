@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
     <head>
+        <meta charset="utf-8" />
         <title>Sign Up</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+            integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
     </head>
+
     <body>
-        <div class="pure-menu pure-menu-horizontal" class="'flex-container">
-            <ul class="pure-menu-list"></ul>
+        <div class="pure-menu pure-menu-horizontal" class="flex-container">
+            <ul class="pure-menu-list">
                 <li class="pure-menu-item">
                     <img src="static/img/hot_takes_logo.png" id="logo">
                 </li>
@@ -23,22 +29,10 @@
                 <li class="pure-menu-item">
                     <a href="#" class="pure-menu-link">Make a Take</a>
                 </li>
+            </ul>
         </div>
-        <!-- <div class="'signUpDiv">
-            <h1>Sign Up</h1>
-            <label>Username:</label>
-            <input type="text">
-            <br>
-            <label>Password:</label>
-            <input type="password">
-            <br>
-            <label> Reenter Password:</label>
-            <input type="password">
-            <br>
-            <span>Non-Hot Take: Passwords should contain at least one uppercase letter, one lowercase letter, one digit, and one special character.</span>
-            <button type="submit"></button>
-        </div> -->
-        <div id="signUpFormContainer">
+
+        <!-- <div id="signUpFormContainer">
             <form class="pure-form pure-form-stacked" id="signupform">
                 <fieldset>
                     <div class="pure-control-group">
@@ -64,7 +58,11 @@
                     </div>
                 </fieldset>
             </form>
-        </div>
+        </div> -->
 
+        <p><a href="/login">Login</a></p>
+
+        <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
     </body>
+
 </html>
