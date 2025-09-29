@@ -6,7 +6,7 @@ import json
 from os import environ as env
 import os
 from flask_sqlalchemy import SQLAlchemy
-
+import datetime
 from flask import Flask, render_template, request, send_from_directory;
 
 from psycopg2.errors import ForeignKeyViolation
@@ -23,7 +23,7 @@ app.static_folder = "static"
 with app.app_context():
     db_setup()
 
-USER_ID = "00000000-0000-0000-0000-000000000001"
+USER_ID = "00000000-0000-0000-0000-000000000001" # TODO: will this be a problem? each time you start your server, this will reset to 1
 
 TAKE_COLS = ["title", "tagId", "description"]
 
@@ -84,12 +84,11 @@ def favicon():
 Page Routes
 """
 @app.route("/")
-def home_page():
+def home_page(): # TODO: check if user is in session, if not redirect to signup/login page
     return render_template("index.html", takes=takes, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
 @app.route("/signup")
 def signup():
-    print("signing up")
     return render_template("signup.html")
 
 
@@ -129,6 +128,53 @@ def user_add_session():
     """
 
     pass
+
+# docs at https://auth0.com/docs/quickstart/webapp/python/interactive
+@app.route("/login-callback")
+def login():
+    print("login-callback")
+    return oauth.auth0.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True)
+    )
+
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    print("in callback")
+    try:
+        token = oauth.auth0.authorize_access_token()
+        print(f"token: {json.dumps(token, indent=4, default=str)}")
+        session["user"] = token
+        # session["signin-time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        basic_user_info = {
+            "first_name" : token["userinfo"]["given_name"],
+            "last_name" : token["userinfo"]["family_name"],
+            "nickname" : token["userinfo"]["nickname"],
+            "email" : token["userinfo"]["email"],
+            "user_profile_pic" : token["userinfo"]["picture"],
+            "user_id" : token["userinfo"]["sub"] # this is the only unique identifier for each google account
+        } # TODO: check if this exist inside the DB
+
+        return redirect("/")
+    except Exception as e:
+        print(f"OAuth callback error: {e}")
+        return redirect("/signup") # TODO: maybe check if the user exist in the db or else add new user
+
+@app.route("/logout")
+def logout():
+    print("logging out")
+    session.clear()
+    return redirect(
+        "https://" + env.get("AUTH0_DOMAIN")
+        + "/v2/logout?"
+        + urlencode(
+            {
+                "returnTo": url_for("home", _external=True),
+                "client_id": env.get("AUTH0_CLIENT_ID"),
+            },
+            quote_via=quote_plus,
+        )
+    )
 
 # Take Routes
 @app.route("/api/takes")
@@ -356,37 +402,6 @@ def take_comment_delete(takeId, commentId):
     # TODO
     pass
 
-# docs at https://auth0.com/docs/quickstart/webapp/python/interactive
-@app.route("/login")
-def login():
-    print("logging in")
-    return oauth.auth0.authorize_redirect(
-        redirect_uri=url_for("callback", _external=True)
-    )
-
-@app.route("/callback", methods=["GET", "POST"])
-def callback():
-    print("in callback")
-    print(request.args)
-    token = oauth.auth0.authorize_access_token()
-    session["user"] = token
-    return redirect("/")
-
-@app.route("/logout")
-def logout():
-    print("logging out")
-    session.clear()
-    return redirect(
-        "https://" + env.get("AUTH0_DOMAIN")
-        + "/v2/logout?"
-        + urlencode(
-            {
-                "returnTo": url_for("home", _external=True),
-                "client_id": env.get("AUTH0_CLIENT_ID"),
-            },
-            quote_via=quote_plus,
-        )
-    )
 
 app.static_folder = "static"
 

@@ -1,0 +1,25 @@
+token: {
+    "access_token": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtODVyNXFobDJndWV1bnNqNC51cy5hdXRoMC5jb20vIn0..jwwlK2r0cxqY3kmM.xszB0map_ls8qf0dAeOQAB5EPAkv9t7tBsx5VzSyejMecHXVa2esLibuflPm3V4nDgKy384pxRh4AsIF4MAOHkSILXfJFsgEArjT7LChaLnxcs0k5FfJzvE0O6NStI1LHQxtHMHUUDemuciyhxaKzu3-VArvAvB_xDwQDO4PbuSEjQhMW_uG3681AehWyZtvCvrcseulClQjiXRNXim8j8xD6p6Wiytk03QAjU1PRq_-RDg8O7xo_CgMuFEgeAGWFUCAbjP3Nv--Vp3F8vO5HqDUze-I1BBOnZGAJj4c7xSLHG77BLonM6bVO7wVUpilCm6bmNpzqAegGfK0KuWeTJctLrlXow4.v0leyei3DNHo89AwCEkw6Q",
+    "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjhYc1dpaXlhbDRQWGl3eEgzSGgxWSJ9.eyJnaXZlbl9uYW1lIjoiSm9zaHVhIiwiZmFtaWx5X25hbWUiOiJDaGVuZyIsIm5pY2tuYW1lIjoiY2hlbjc2NDciLCJuYW1lIjoiSm9zaHVhIENoZW5nIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0xNR0xjS091WUVlcVNWZ0ZpbWVLYmdaNkM4Rm40VFBMRURSSGxYMWY4Wnc4WUg3dz1zOTYtYyIsInVwZGF0ZWRfYXQiOiIyMDI1LTA5LTI5VDE5OjE4OjMwLjUyM1oiLCJlbWFpbCI6ImNoZW43NjQ3QHVtbi5lZHUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9kZXYtODVyNXFobDJndWV1bnNqNC51cy5hdXRoMC5jb20vIiwiYXVkIjoia3RScGJDSTU2cko2b2hpQUhId3ZmMzNyaXk5dTB3NjUiLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwNDQ3NTc0MTQwNDMxNTkxNjUwOSIsImlhdCI6MTc1OTE3NTIwNywiZXhwIjoxNzU5MjExMjA3LCJzaWQiOiJSUjRCYUZnNmRjVFd2QXp3VkhXWjlFRUI5YWVlbmFMWSIsIm5vbmNlIjoiRFdhYUpjVzlxckhpbkszV2NNZG8ifQ.arL3KgjABkvym_uwm5vGdRd05P8l8cxlHsa8UCXfXjzTChghWJKRrqaUAwG3y59zuiEME6wGciQFuaPLdTEIps0Jy2ymptaWcS6FagsZsanTvIteVd-gLzmwtQ06vU32yuUETZIWBEzx7N-sHSCXSXLEL2k1V-P7W8dkbwfDtXXG0M90u1UWOn3wJ8li052cbrGb4109hVewOmkqUhIQWvCysCw5CeoG-uF-U1_47bd2IBQEcMIGSwUvxz7P1Im0yfiZBHGRpUecJLJRYfp2M4OcyLcXc8CIKYiCE071OB-5SC5AEC_oAntWYtrm-sitfnyewolaz6zR1Lvk_BPFtA",
+    "scope": "openid profile email",
+    "expires_in": 86400,
+    "token_type": "Bearer",
+    "expires_at": 1759261607,
+    "userinfo": {
+        "given_name": "Joshua",
+        "family_name": "Cheng",
+        "nickname": "chen7647",
+        "name": "Joshua Cheng",
+        "picture": "https://lh3.googleusercontent.com/a/ACg8ocLMGLcKOuYEeqSVgFimeKbgZ6C8Fn4TPLEDRHlX1f8Zw8YH7w=s96-c",
+        "updated_at": "2025-09-29T19:18:30.523Z",
+        "email": "chen7647@umn.edu",
+        "email_verified": true,
+        "iss": "https://dev-85r5qhl2gueunsj4.us.auth0.com/",
+        "aud": "ktRpbCI56rJ6ohiAHHwvf33riy9u0w65",
+        "sub": "google-oauth2|104475741404315916509",
+        "iat": 1759175207,
+        "exp": 1759211207,
+        "sid": "RR4BaFg6dcTWvAzwVHWZ9EEB9aeenaLY",
+        "nonce": "DWaaJcW9qrHinK3WcMdo"
+    }
+}

@@ -7,8 +7,13 @@ from flask import current_app, g
 
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import DictCursor
+from dotenv import find_dotenv, load_dotenv
 
 pool = None
+
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
 
 def setup():
     global pool
