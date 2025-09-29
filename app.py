@@ -356,8 +356,6 @@ def take_comment_delete(takeId, commentId):
     # TODO
     pass
 
-if __name__ == "__main__":
-    app.run(debug=True)
 # docs at https://auth0.com/docs/quickstart/webapp/python/interactive
 @app.route("/login")
 def login():
